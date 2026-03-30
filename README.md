@@ -1,25 +1,25 @@
-# Spelling Bee Challenge - Deluxe Multi-Level
+# Spelling Bee Challenge - Deluxe Big Word Pack
 
-This version adds:
-- sound effects for correct and wrong answers
-- level-up overlay animation
-- 3 level progression
-- GitHub Pages ready structure
+This version keeps your full arcade/game-show layout and adds a much larger word pool.
 
-## Levels
-- 6 correct answers = Level 2
-- 12 correct answers = Level 3
+## Included
+- big word lists
+- level progression
+- sound effects
+- level-up animation
+- GitHub Pages ready
 
 ## Files
 - index.html
 - styles.css
 - script.js
+- README.md
 
-## Publish on GitHub Pages
-1. Create a repository on GitHub
-2. Upload all files
-3. Commit
-4. Go to Settings > Pages
-5. Choose Deploy from a branch
-6. Select main and /root
-7. Save
+## To update your GitHub repo
+Replace:
+- index.html
+- styles.css
+- script.js
+- README.md
+
+Then commit the changes and refresh your live site after GitHub rebuilds it.
