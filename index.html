@@ -1,352 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Scramble Challenge Final Combined</title>
-<style>
-:root{
-  --bg:#050c21; --panel:#111d4a; --accent:#f0c94b; --text:#f4f0e6; --muted:#c9c3b3;
-  --success:#10c98f; --danger:#c23b4f;
-}
-*{box-sizing:border-box}
-body{
-  margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--text);
-  background:linear-gradient(180deg,#030918 0%,#020816 100%); padding:20px 16px 28px;
-}
-.wrap{
-  max-width:1120px; margin:0 auto; border:2px solid #182652; border-radius:30px;
-  padding:18px; background:rgba(2,8,22,.72);
-}
-#gameScreen{display:none}
-.topbar{
-  display:grid; grid-template-columns:1.7fr .45fr .45fr .45fr; gap:14px; align-items:stretch;
-}
-.mode-pill,.stat-box,.card,.ad-box,.mini-card,.message{
-  border-radius:28px; background:linear-gradient(90deg,#10183b 0%, #121e4f 100%);
-  border:1px solid rgba(163,181,255,.18);
-}
-.mode-pill{
-  min-height:64px; display:flex; align-items:center; justify-content:center;
-  font-size:20px; font-weight:800; box-shadow:inset 0 0 0 1px rgba(240,201,75,.35);
-}
-.stat-box{padding:12px 8px 10px; text-align:center}
-.stat-label{color:#d8d0bc; letter-spacing:3px; font-size:13px; font-weight:800; opacity:.85}
-.stat-value{font-size:23px; font-weight:800; margin-top:4px}
-.card{margin-top:24px; padding:28px 30px}
-.section-label{color:#e7d79a; letter-spacing:4px; font-size:16px; font-weight:800; margin:0 0 18px 0}
-#scrambledWord{font-size:92px; line-height:1; font-weight:900; letter-spacing:4px; margin:0 0 16px 0}
-#modeHint{color:var(--muted); font-size:19px; font-weight:700; margin:0}
-.answer-label{font-size:18px; font-weight:800; margin-bottom:12px}
-.answer-row{display:grid; grid-template-columns:1fr 170px 110px; gap:14px; align-items:center}
-input{
-  width:100%; min-height:76px; border-radius:24px; border:4px solid #4aa2ff;
-  background:#2a335c; color:var(--text); font-size:23px; font-weight:800; padding:0 22px; outline:none;
-  text-transform:uppercase;
-}
-input::placeholder{color:#d2c7a8; opacity:.95}
-.action-btn,.small-btn,.mode-btn,.start-btn{
-  border:none; cursor:pointer; font-weight:900;
-}
-.action-btn{min-height:72px; font-size:18px; border-radius:24px}
-.submit-btn{background:var(--accent); color:#111}
-.skip-btn{background:#454f7e; color:#f0ead9}
-.sub-actions{display:flex; gap:14px; margin-top:18px}
-.small-btn{min-height:58px; padding:0 28px; font-size:16px; border-radius:20px; background:#4a547f; color:#f1ead5}
-.message{
-  margin-top:22px; padding:18px 24px; font-size:18px; font-weight:800; min-height:84px; display:flex; align-items:center;
-}
-.message.success{background:linear-gradient(90deg,rgba(0,79,74,.45), rgba(5,39,60,.45)); border-color:#1bc7a0}
-.message.error{background:linear-gradient(90deg,rgba(88,14,30,.58), rgba(67,5,28,.58)); border-color:#d05367}
-.message.neutral{background:linear-gradient(90deg,rgba(20,33,79,.9), rgba(17,28,73,.9))}
-.timer-card{margin-top:22px; padding:18px 24px 28px}
-.timer-head{display:flex; justify-content:space-between; font-size:18px; font-weight:800; margin-bottom:14px}
-.timer-track{width:100%; height:16px; border-radius:999px; background:#38456e; overflow:hidden}
-.timer-bar{height:100%; width:100%; background:linear-gradient(90deg,#4d9af5,#44d3cb); transition:width 1s linear}
-.ad-box{
-  margin-top:24px; min-height:148px; display:flex; align-items:center; justify-content:center;
-  border:3px dashed rgba(179,190,215,.36); color:#9ca3c7; font-size:34px; font-weight:900; letter-spacing:2px;
-}
-.bottom-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:24px}
-.mini-card{padding:24px 28px}
-.mini-title{color:#e7d79a; letter-spacing:4px; font-size:14px; font-weight:900; margin:0 0 20px 0}
-.mini-text{font-size:18px; line-height:1.55; color:#e9e4d8; font-weight:700; margin:0}
-
-.modal-bg{
-  position:fixed; inset:0; background:rgba(3,8,21,.52); display:flex; align-items:center; justify-content:center; z-index:10;
-}
-.modal-box{
-  width:min(560px,92vw); border-radius:34px; padding:34px 30px 32px; text-align:center;
-  background:linear-gradient(180deg,#0d1a4a 0%, #09143c 100%);
-  border:1px solid rgba(163,181,255,.18);
-  box-shadow:0 20px 80px rgba(0,0,0,.35);
-}
-.modal-title{font-size:36px; font-weight:900; margin:0 0 10px 0}
-.modal-sub{font-size:18px; color:#d8d0bc; margin:0 0 20px 0; font-weight:700}
-.mode-row{display:flex; justify-content:center; gap:14px; margin-bottom:16px; flex-wrap:wrap}
-.mode-btn{
-  min-width:110px; min-height:72px; border-radius:24px; font-size:18px;
-  background:#4b567f; color:#f2ead8;
-}
-.mode-btn.active{background:var(--accent); color:#111}
-.start-btn{
-  width:100%; min-height:72px; border-radius:28px; font-size:20px; background:var(--accent); color:#111;
-}
-
-.popup{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(3,8,21,.28); pointer-events:none; z-index:20}
-.popup-box{background:#101a45; border:1px solid rgba(157,176,255,.18); border-radius:28px; padding:28px 42px; font-size:42px; font-weight:900}
-
-@media (max-width:900px){
-  .topbar{grid-template-columns:1fr 1fr}
-  .answer-row{grid-template-columns:1fr}
-  .bottom-grid{grid-template-columns:1fr}
-  #scrambledWord{font-size:64px}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spelling Bee Challenge — Game Over Fixed</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="wrap">
-  <div id="gameScreen">
-    <div class="topbar">
-      <div class="mode-pill" id="modePill">Easy Mode</div>
-      <div class="stat-box"><div class="stat-label">SCORE</div><div class="stat-value" id="scoreValue">0</div></div>
-      <div class="stat-box"><div class="stat-label">ROUND</div><div class="stat-value" id="roundValue">1/15</div></div>
-      <div class="stat-box"><div class="stat-label">STREAK</div><div class="stat-value" id="streakValue">0</div></div>
-    </div>
+  <div class="bg-glow"></div>
 
-    <div class="card">
-      <div class="section-label">UNSCRAMBLE THIS WORD</div>
-      <div id="scrambledWord">HEART</div>
-      <p id="modeHint">Short and friendly words.</p>
-    </div>
+  <div class="app-shell">
+    <header class="stats-bar">
+      <div class="stat-pill" id="levelDisplay">Level: 1</div>
+      <div class="stat-pill" id="scoreDisplay">Score: 0</div>
+      <div class="stat-pill" id="livesDisplay">Lives: 5</div>
+      <div class="stat-pill" id="streakDisplay">Streak: 0</div>
+      <div class="stat-pill" id="timeDisplay">Time: 90s</div>
+    </header>
 
-    <div class="card">
-      <div class="answer-label">Enter your answer:</div>
-      <div class="answer-row">
-        <input id="answerInput" type="text" placeholder="TYPE YOUR ANSWER..." autocomplete="off" />
-        <button class="action-btn submit-btn" onclick="submitAnswer()">Submit</button>
-        <button class="action-btn skip-btn" onclick="skipWord()">Skip</button>
-      </div>
-      <div class="sub-actions">
-        <button class="small-btn" onclick="useHint()">Hint</button>
-        <button class="small-btn" onclick="restartToMenu()">Restart</button>
-      </div>
-    </div>
+    <main class="main-card" id="mainCard">
+      <section id="startScreen">
+        <div class="hero">
+          <div class="bee-box">🐝</div>
+          <div class="hero-copy">
+            <div class="eyebrow">Arcade / Game-Show Edition</div>
+            <h1>Spelling Bee Challenge</h1>
+            <p class="intro">
+              Multi-level spelling action with score streaks, level-up animation, built-in sound effects,
+              and rotating word pools. Start easy, climb to medium, then survive the hard round.
+            </p>
+          </div>
+        </div>
 
-    <div id="messageBox" class="message neutral">🎯 Pick a difficulty and press Start Game.</div>
+        <div class="settings-grid">
+          <div class="setting-card">
+            <label for="roundLength">Round Length</label>
+            <select id="roundLength">
+              <option value="60">60 seconds</option>
+              <option value="90" selected>90 seconds</option>
+              <option value="120">120 seconds</option>
+            </select>
+          </div>
 
-    <div class="card timer-card">
-      <div class="timer-head"><div>Time remaining</div><div id="timeLabel">20s</div></div>
-      <div class="timer-track"><div id="timerBar" class="timer-bar"></div></div>
-    </div>
+          <div class="setting-card">
+            <label for="livesSelect">Lives</label>
+            <select id="livesSelect">
+              <option value="3">3 lives</option>
+              <option value="5" selected>5 lives</option>
+              <option value="7">7 lives</option>
+            </select>
+          </div>
+        </div>
 
-    <div class="ad-box">ADVERTISEMENT</div>
+        <div class="start-row">
+          <button id="startBtn" class="gold-btn">Start Game</button>
+        </div>
 
-    <div class="bottom-grid">
-      <div class="mini-card">
-        <div class="mini-title">HOW TO PLAY</div>
-        <p class="mini-text">Unscramble each word before the timer runs out. Correct answers build your streak and unlock more points. Use Hint when you need a little help. Skip moves you to the next round with no points.</p>
-      </div>
-      <div class="mini-card">
-        <div class="mini-title">VIDEO-READY FEATURES</div>
-        <p class="mini-text">Clean scoreboard, timer, answer reveal, round system, real difficulty modes, streak scoring, restart button, and ad area placeholder for future monetization layout.</p>
-      </div>
+        <div class="features-grid">
+          <div class="feature-card">🔊 Sound Effects</div>
+          <div class="feature-card">✨ Level-Up Animation</div>
+          <div class="feature-card">🏁 3 Clear Levels</div>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="hidden">
+        <div class="level-banner" id="levelBanner">Level 1 - Easy Words</div>
+
+        <div class="prompt-card">
+          <div class="eyebrow">Spell This Word</div>
+          <div class="letter-count" id="letterCount">7 letters</div>
+          <div class="clue" id="clue">A portable light source.</div>
+        </div>
+
+        <div class="answer-card">
+          <label for="answer">Type the spelling:</label>
+          <div class="answer-row">
+            <input id="answer" placeholder="Enter the word here" autocomplete="off" />
+            <button id="submitBtn" class="gold-btn">Submit</button>
+            <button id="skipBtn" class="ghost-btn">Skip</button>
+          </div>
+        </div>
+
+        <div class="feedback-card neutral" id="feedbackBox">Level 1 begins. Type the word exactly.</div>
+      </section>
+
+      <section id="resultScreen" class="hidden">
+        <div class="hero">
+          <div class="bee-box">🏆</div>
+          <div class="hero-copy">
+            <div class="eyebrow">Round Complete</div>
+            <h2 class="result-title">Final Score: <span id="finalScore">0</span></h2>
+            <p class="intro" id="resultText">Nice run.</p>
+          </div>
+        </div>
+
+        <div class="features-grid result-grid">
+          <div class="feature-card">Correct<br><span id="correctCount">0</span></div>
+          <div class="feature-card">Wrong<br><span id="wrongCount">0</span></div>
+          <div class="feature-card">Best Streak<br><span id="bestStreak">0</span></div>
+        </div>
+
+        <div class="start-row">
+          <button id="playAgainBtn" class="gold-btn">Play Again</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="levelUpOverlay" class="overlay hidden">
+    <div class="overlay-card">
+      <div class="overlay-icon">⭐</div>
+      <div class="overlay-title">Level Up!</div>
+      <div class="overlay-sub" id="overlaySub">Welcome to Level 2</div>
     </div>
   </div>
-</div>
 
-<div class="modal-bg" id="startModal">
-  <div class="modal-box">
-    <h1 class="modal-title">Scramble Challenge</h1>
-    <p class="modal-sub">Pick a difficulty and start your game.</p>
-    <div class="mode-row">
-      <button class="mode-btn active" id="easyBtn" onclick="selectMode('easy')">Easy</button>
-      <button class="mode-btn" id="mediumBtn" onclick="selectMode('medium')">Medium</button>
-      <button class="mode-btn" id="hardBtn" onclick="selectMode('hard')">Hard</button>
-    </div>
-    <button class="start-btn" onclick="startGame()">Start Game</button>
-  </div>
-</div>
-
-<div class="popup" id="popup"><div class="popup-box" id="popupBox">CORRECT!</div></div>
-
-<script>
-const WORD_BANKS = {
-  easy: ["CAT", "DOG", "SUN", "MAP", "BOX", "RED", "HAT", "BED", "CAR", "PEN", "CUP", "BAT", "DUB", "BASS", "SONG", "NOTE", "BEAT", "JAZZ", "SOUL", "TUNE", "DRUM", "WAVE", "MIKE", "HOOK", "CLAP", "ROOT", "GOLD", "BLUE", "PINK", "STAR", "MOON", "FIRE", "WIND", "RAIN", "BIRD", "FISH", "KING", "QUEEN", "RING", "BELL", "TREE", "ROAD", "BOOK", "LAMP", "DOOR", "FLOOR", "APPLE", "GRAPE", "LEMON", "MANGO", "SMILE", "DANCE", "CHANT", "FLUTE", "PIANO", "ORGAN", "TRACK", "VOICE"],
-  medium: ["SOUND", "HEART", "VINYL", "RADIO", "MUSIC", "CLAPS", "TEMPO", "NOTES", "VERSE", "BRASS", "CHANT", "FLUTE", "PIANO", "ORGAN", "TUNES", "SNARE", "HOOKS", "TRACK", "VOICE", "ROOTS", "SKANK", "LOOPS", "REELS", "MELLOW", "SMOOTH", "RHYTHM", "MELODY", "HARMONY", "GROOVE", "REGGAE", "CHORUS", "BRIDGE", "RECORD", "PLAYER", "MIXER", "STEREO", "BUTTON", "SHUFFLE", "DANCER", "SINGER", "GUITAR", "BONGO", "LATIN", "SWING", "LIVELY", "SAXES", "LOUDER", "CHIMES", "JAMMIN", "SPIRIT", "VIBRANT"],
-  hard: ["AUDIOPHILE", "BROADCAST", "COMPOSER", "EQUALIZER", "HEADSHELL", "CARTRIDGE", "TURNTABLE", "AMPLIFIER", "MICROPHONE", "IMPROVISE", "ORCHESTRA", "HARMONICS", "COLLECTOR", "SOUNDTRACK", "VIBRATION", "MASTERING", "SYNCOPATE", "CROSSFADER", "MULTITRACK", "INSTRUMENT", "MUSICOLOGY", "REMIXABLE", "HEADPHONES", "ANALOGUE", "FREQUENCY", "RESONANCE", "PRESERVER", "PERFORMER", "MELODIOUS", "SOUNDWAVE", "SIGNATURE", "CALIBRATE", "TAPEDECK", "VINYLIZED"]
-};
-const SETTINGS = {
-  easy: {label:"Easy Mode", time:20, hint:"Short and friendly words.", totalRounds:15},
-  medium: {label:"Medium Mode", time:15, hint:"A little trickier and faster.", totalRounds:15},
-  hard: {label:"Hard Mode", time:12, hint:"Longer words. Less time. More pressure.", totalRounds:15}
-};
-const state = {
-  mode:"easy", currentWord:"", round:1, totalRounds:15, score:0, streak:0, timeLeft:20, timer:null, hintUsed:false, available:[]
-};
-
-const els = {
-  gameScreen: document.getElementById("gameScreen"),
-  startModal: document.getElementById("startModal"),
-  modePill: document.getElementById("modePill"),
-  scrambledWord: document.getElementById("scrambledWord"),
-  modeHint: document.getElementById("modeHint"),
-  answerInput: document.getElementById("answerInput"),
-  scoreValue: document.getElementById("scoreValue"),
-  roundValue: document.getElementById("roundValue"),
-  streakValue: document.getElementById("streakValue"),
-  messageBox: document.getElementById("messageBox"),
-  timerBar: document.getElementById("timerBar"),
-  timeLabel: document.getElementById("timeLabel"),
-  popup: document.getElementById("popup"),
-  popupBox: document.getElementById("popupBox"),
-  easyBtn: document.getElementById("easyBtn"),
-  mediumBtn: document.getElementById("mediumBtn"),
-  hardBtn: document.getElementById("hardBtn")
-};
-
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
-function pickNextWord(){
-  if(state.available.length===0) state.available = shuffle(WORD_BANKS[state.mode]);
-  return state.available.pop();
-}
-function scramble(word){
-  let arr = word.split("");
-  let out = word;
-  let tries = 0;
-  while(out === word && tries < 12){
-    for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
-    out = arr.join("");
-    tries++;
-  }
-  return out;
-}
-function selectMode(mode){
-  state.mode = mode;
-  els.easyBtn.classList.toggle("active", mode==="easy");
-  els.mediumBtn.classList.toggle("active", mode==="medium");
-  els.hardBtn.classList.toggle("active", mode==="hard");
-}
-function updateStats(){
-  els.scoreValue.textContent = state.score;
-  els.roundValue.textContent = state.round + "/" + state.totalRounds;
-  els.streakValue.textContent = state.streak;
-  els.modePill.textContent = SETTINGS[state.mode].label;
-  els.modeHint.textContent = SETTINGS[state.mode].hint;
-}
-function showMessage(text, type){
-  els.messageBox.className = "message " + type;
-  els.messageBox.textContent = text;
-}
-function showPopup(text, color){
-  els.popupBox.textContent = text;
-  els.popupBox.style.color = color;
-  els.popup.style.display = "flex";
-  setTimeout(function(){ els.popup.style.display = "none"; }, 850);
-}
-function updateTimerUI(){
-  const max = SETTINGS[state.mode].time;
-  const pct = (state.timeLeft / max) * 100;
-  els.timerBar.style.width = pct + "%";
-  els.timeLabel.textContent = state.timeLeft + "s";
-  if(state.timeLeft <= Math.ceil(max*0.25)){
-    els.timerBar.style.background = "linear-gradient(90deg,#ef6b6b,#b91c3b)";
-  } else {
-    els.timerBar.style.background = "linear-gradient(90deg,#4d9af5,#44d3cb)";
-  }
-}
-function startTimer(){
-  clearInterval(state.timer);
-  state.timeLeft = SETTINGS[state.mode].time;
-  updateTimerUI();
-  state.timer = setInterval(function(){
-    state.timeLeft -= 1;
-    updateTimerUI();
-    if(state.timeLeft <= 0){
-      clearInterval(state.timer);
-      state.streak = 0;
-      updateStats();
-      showMessage("⏰ Time up. The word was " + state.currentWord + ".", "error");
-      showPopup("TIME UP!", "#ff6b6b");
-      setTimeout(nextRound, 900);
-    }
-  }, 1000);
-}
-function loadWord(){
-  state.currentWord = pickNextWord();
-  state.hintUsed = false;
-  els.scrambledWord.textContent = scramble(state.currentWord);
-  els.answerInput.value = "";
-  els.answerInput.focus();
-  startTimer();
-}
-function startGame(){
-  els.startModal.style.display = "none";
-  els.gameScreen.style.display = "block";
-  state.round = 1;
-  state.totalRounds = SETTINGS[state.mode].totalRounds;
-  state.score = 0;
-  state.streak = 0;
-  state.available = shuffle(WORD_BANKS[state.mode]);
-  updateStats();
-  showMessage("🎯 Game started. Press Submit when you're ready.", "neutral");
-  loadWord();
-}
-function nextRound(){
-  if(state.round >= state.totalRounds){
-    clearInterval(state.timer);
-    showMessage("🏁 Run complete. Final score: " + state.score + ". Press Restart to play again.", "success");
-    return;
-  }
-  state.round += 1;
-  updateStats();
-  loadWord();
-}
-function submitAnswer(){
-  const guess = els.answerInput.value.trim().toUpperCase();
-  if(!guess) return;
-  clearInterval(state.timer);
-  if(guess === state.currentWord){
-    state.streak += 1;
-    let points = state.mode === "hard" ? 16 : (state.mode === "medium" ? 12 : 10);
-    if(state.hintUsed) points -= 3;
-    if(state.streak >= 3) points += 2;
-    state.score += Math.max(points, 5);
-    updateStats();
-    showMessage("✅ Correct! The word was " + state.currentWord + ". +" + Math.max(points,5) + " points", "success");
-    showPopup("CORRECT!", "#4cffb5");
-  } else {
-    state.streak = 0;
-    updateStats();
-    showMessage("❌ Not quite. The word was " + state.currentWord + ".", "error");
-    showPopup("WRONG!", "#ff6b6b");
-  }
-  setTimeout(nextRound, 900);
-}
-function skipWord(){
-  clearInterval(state.timer);
-  state.streak = 0;
-  updateStats();
-  showMessage("⏭️ Skipped. The word was " + state.currentWord + ".", "neutral");
-  setTimeout(nextRound, 700);
-}
-function useHint(){
-  if(state.hintUsed) return;
-  state.hintUsed = true;
-  showMessage("💡 Hint: the word starts with " + state.currentWord.charAt(0) + ".", "neutral");
-}
-function restartToMenu(){
-  clearInterval(state.timer);
-  els.startModal.style.display = "flex";
-  showMessage("🎯 Pick a difficulty and press Start Game.", "neutral");
-}
-els.answerInput.addEventListener("keydown", function(e){ if(e.key === "Enter") submitAnswer(); });
-els.gameScreen.style.display = "block";
-updateStats();
-</script>
+  <script src="script.js"></script>
 </body>
 </html>
